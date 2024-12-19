@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { authService } from '@/services/auth'
-import type { User } from '@/types/auth'
+import type { User, RegisterDTO } from '@/types/auth'
 import EditUserModal from './components/EditUserModal'
+import CreateUserModal from './components/CreateUserModal'
 import { UpdateUserDTO } from '@/types/auth';
 
 export default function UsersPage() {
@@ -11,6 +12,19 @@ export default function UsersPage() {
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
+    const [showCreateModal, setShowCreateModal] = useState(false);
+
+    const handleCreate = async (userData: RegisterDTO) => {
+        try {
+            await authService.createUser(userData);
+            // Refresh user list
+            const updatedUsers = await authService.getAllUsers();
+            setUsers(updatedUsers);
+            setShowCreateModal(false);
+        } catch (error) {
+            console.error('Failed to create user:', error);
+        }
+    };
 
   const handleEdit = (user: User) => {
     setSelectedUser(user);
@@ -65,6 +79,13 @@ export default function UsersPage() {
     <div>
         <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+            <button
+                    data-testid="create-user-button"
+                    onClick={() => setShowCreateModal(true)}
+                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                >
+                    Create User
+                </button>
             <div>
                 <input
                     type="text"
@@ -123,6 +144,13 @@ export default function UsersPage() {
                 user={selectedUser}
                 onClose={() => setSelectedUser(null)}
                 onSave={handleSave}
+            />
+        )}
+
+        {showCreateModal && (
+            <CreateUserModal
+                onClose={() => setShowCreateModal(false)}
+                onSave={handleCreate}
             />
         )}
     </div>

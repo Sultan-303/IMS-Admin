@@ -1,5 +1,5 @@
 import api from './api';
-import { LoginRequest, LoginResponse, User, AdminUser, UpdateUserDTO } from '../types/auth';
+import { LoginRequest, LoginResponse, User, AdminUser, UpdateUserDTO, RegisterDTO } from '../types/auth';
 
 export const authService = {
     login: async (credentials: LoginRequest): Promise<LoginResponse> => {
@@ -26,5 +26,10 @@ export const authService = {
 
     deleteUser: async (id: number): Promise<void> => {
         await api.delete(`/Admin/users/${id}`);
+    },
+
+    createUser: async (userData: RegisterDTO): Promise<User> => {
+        const response = await api.post<User>('/Auth/register', userData);
+        return response.data;
     },
 };

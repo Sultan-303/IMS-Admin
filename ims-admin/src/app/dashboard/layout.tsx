@@ -8,9 +8,9 @@ import type { User } from '@/types/auth'
 
 export default function DashboardLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}) {
+}>) {
   const [user, setUser] = useState<User | null>(null)
   const router = useRouter()
 

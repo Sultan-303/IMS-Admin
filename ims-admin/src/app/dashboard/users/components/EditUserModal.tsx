@@ -35,6 +35,7 @@ export default function EditUserModal({ user, onClose, onSave }: EditUserModalPr
                         <label htmlFor="username" className="block text-sm font-medium mb-1">Username</label>
                         <input
                             id="username"
+                            data-testid="edit-username"
                             type="text"
                             value={userData.username}
                             onChange={(e) => setUserData({...userData, username: e.target.value})}
@@ -48,6 +49,7 @@ export default function EditUserModal({ user, onClose, onSave }: EditUserModalPr
                         <label htmlFor="password" className="block text-sm font-medium mb-1">Password</label>
                         <input
                             id="password"
+                            data-testid="edit-password"
                             type="password"
                             value={userData.password}
                             onChange={(e) => setUserData({ ...userData, password: e.target.value })}
@@ -60,6 +62,7 @@ export default function EditUserModal({ user, onClose, onSave }: EditUserModalPr
                         <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
                         <input
                             id="email"
+                            data-testid="edit-email"
                             type="email"
                             value={userData.email}
                             onChange={(e) => setUserData({...userData, email: e.target.value})}
@@ -73,6 +76,7 @@ export default function EditUserModal({ user, onClose, onSave }: EditUserModalPr
                         <label htmlFor="role" className="block text-sm font-medium mb-1">Role</label>
                         <select
                             id="role"
+                            data-testid="edit-role"
                             value={userData.role}
                             onChange={(e) => setUserData({...userData, role: e.target.value})}
                             className="w-full p-2 border rounded"
@@ -88,6 +92,7 @@ export default function EditUserModal({ user, onClose, onSave }: EditUserModalPr
                         <label className="flex items-center">
                             <input
                                 id="isActive"
+                                data-testid="edit-active"
                                 type="checkbox"
                                 checked={userData.isActive}
                                 onChange={(e) => setUserData({...userData, isActive: e.target.checked})}
@@ -100,6 +105,7 @@ export default function EditUserModal({ user, onClose, onSave }: EditUserModalPr
                     <div className="flex justify-end gap-2">
                         <button
                             type="button"
+                            data-testid="edit-cancel"
                             onClick={onClose}
                             className="px-4 py-2 text-gray-600 hover:text-gray-800"
                             aria-label="Cancel edit"
@@ -108,6 +114,7 @@ export default function EditUserModal({ user, onClose, onSave }: EditUserModalPr
                         </button>
                         <button
                             type="submit"
+                            data-testid="save-button"
                             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                             aria-label="Save changes"
                         >

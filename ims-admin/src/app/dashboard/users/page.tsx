@@ -109,33 +109,35 @@ export default function UsersPage() {
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredUsers.map(user => (
-                        <tr key={user.id} className="border-b">
-                            <td className="px-6 py-4 text-gray-900">{user.username}</td>
-                            <td className="px-6 py-4 text-gray-900">{user.email}</td>
-                            <td className="px-6 py-4 text-gray-900">{user.role}</td>
-                            <td className="px-6 py-4">
-                                <span className={`px-2 py-1 rounded-full text-xs ${user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                    {user.isActive ? 'Active' : 'Inactive'}
-                                </span>
-                            </td>
-                            <td className="px-6 py-4">
-                                <button 
-                                    onClick={() => handleEdit(user)}
-                                    className="text-blue-600 hover:text-blue-800 mr-2 font-medium"
-                                >
-                                    Edit
-                                </button>
-                                <button 
-                                    onClick={() => handleDelete(user.id)}
-                                    className="text-red-600 hover:text-red-800 font-medium"
-                                >
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
+    {filteredUsers.map(user => (
+        <tr key={user.id} className="border-b" data-testid="user-row">
+            <td className="px-6 py-4 text-gray-900">{user.username}</td>
+            <td className="px-6 py-4 text-gray-900">{user.email}</td>
+            <td className="px-6 py-4 text-gray-900">{user.role}</td>
+            <td className="px-6 py-4">
+                <span className={`px-2 py-1 rounded-full text-xs ${user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                    {user.isActive ? 'Active' : 'Inactive'}
+                </span>
+            </td>
+            <td className="px-6 py-4">
+                <button 
+                    data-testid={`edit-${user.username}`}
+                    onClick={() => handleEdit(user)}
+                    className="text-blue-600 hover:text-blue-800 mr-2 font-medium"
+                >
+                    Edit
+                </button>
+                <button 
+                    data-testid={`delete-${user.username}`}
+                    onClick={() => handleDelete(user.id)}
+                    className="text-red-600 hover:text-red-800 font-medium"
+                >
+                    Delete
+                </button>
+            </td>
+        </tr>
+    ))}
+</tbody>
             </table>
         </div>
 

@@ -12,7 +12,7 @@ export interface User {
     username: string;
     email: string;
     role: string;
-    isActive: boolean;  // Added isActive property
+    isActive: boolean;
 }
 
 export interface AdminUser extends User {
@@ -26,5 +26,5 @@ export interface UpdateUserDTO {
     email: string;
     role: string;
     isActive: boolean;
-    password?: string;
+    password: string; 
 }

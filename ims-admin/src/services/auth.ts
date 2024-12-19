@@ -19,13 +19,8 @@ export const authService = {
 
     updateUser: async (id: number, userData: UpdateUserDTO): Promise<User> => {
     console.log('Frontend update payload:', userData);
-    const response = await api.put<User>(`/Admin/users/${id}`, {
-        username: userData.username,
-        email: userData.email,
-        password: userData.password, // Include this field
-        role: userData.role,
-        isActive: userData.isActive, // And this field
-    });
+    const response = await api.put<User>(`/Admin/users/${id}`, userData);
+    console.log('Frontend update response:', response.data);
     return response.data;
 },
 

@@ -15,7 +15,8 @@ export default function EditUserModal({ user, onClose, onSave }: EditUserModalPr
         username: user?.username || '',
         email: user?.email || '',
         role: user?.role || '',
-        isActive: user?.isActive || false
+        isActive: user?.isActive || false,
+        password: '',
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -41,6 +42,18 @@ export default function EditUserModal({ user, onClose, onSave }: EditUserModalPr
                             placeholder="Enter username"
                             aria-label="Username"
                             required
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label htmlFor="password" className="block text-sm font-medium mb-1">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            value={userData.password}
+                            onChange={(e) => setUserData({ ...userData, password: e.target.value })}
+                            className="w-full p-2 border rounded"
+                            placeholder="Enter new password (leave blank to keep current)"
+                            aria-label="Password"
                         />
                     </div>
                     <div className="mb-4">

@@ -43,6 +43,7 @@ export default function LoginPage() {
             <label htmlFor="username" className="block text-gray-700 mb-2">Username</label>
             <input
               id="username"
+              data-testid="username"
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -57,6 +58,7 @@ export default function LoginPage() {
             <label htmlFor="password" className="block text-gray-700 mb-2">Password</label>
             <input
               id="password"
+              data-testid="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -68,12 +70,14 @@ export default function LoginPage() {
             />
           </div>
           <button 
-            type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-blue-300"
-            disabled={loading}
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
+  type="submit"
+  data-testid="login-button"
+  className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-blue-300"
+  disabled={loading}
+>
+  {loading ? 'Logging in...' : 'Login'}
+</button>
+          {error && <div data-testid="error-message">{error}</div>}
         </form>
       </div>
     </div>

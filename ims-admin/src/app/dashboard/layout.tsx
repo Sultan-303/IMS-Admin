@@ -14,6 +14,11 @@ export default function DashboardLayout({
   const [user, setUser] = useState<User | null>(null)
   const router = useRouter()
 
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    router.push('/auth/login')
+  }
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -43,6 +48,15 @@ export default function DashboardLayout({
             <Link href="/dashboard/users" className="block p-2 hover:bg-gray-700 rounded">
               User Management
             </Link>
+          </li>
+          <li>
+            <button 
+              data-testid="logout-button"
+              onClick={handleLogout}
+              className="w-full text-left p-2 hover:bg-gray-700 rounded"
+            >
+              Logout
+            </button>
           </li>
         </ul>
       </nav>

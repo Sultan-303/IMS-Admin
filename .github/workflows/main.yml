@@ -11,9 +11,6 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Switch to Windows containers
-      run: |
-        & $Env:ProgramFiles\Docker\Docker\DockerCli.exe -SwitchDaemon
     - name: Build Docker images
       run: docker compose build
 
@@ -22,9 +19,6 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Switch to Windows containers
-      run: |
-        & $Env:ProgramFiles\Docker\Docker\DockerCli.exe -SwitchDaemon
     - name: Start containers
       run: docker compose up -d
     - name: Run Cypress tests in container

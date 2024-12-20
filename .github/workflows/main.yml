@@ -9,20 +9,26 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: .
     steps:
     - uses: actions/checkout@v3
     - name: Build Docker images
-      run: docker compose build
+      run: docker compose -f ./docker-compose.yml build
 
   test:
     needs: build
     runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: .
     steps:
     - uses: actions/checkout@v3
     - name: Start containers
-      run: docker compose up -d
+      run: docker compose -f ./docker-compose.yml up -d
     - name: Run Cypress tests in container
-      run: docker compose exec -T frontend npm run cypress:run
+      run: docker compose -f ./docker-compose.yml exec -T frontend npm run cypress:run
 
   artifacts:
     needs: test

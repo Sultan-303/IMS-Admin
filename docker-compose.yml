@@ -1,17 +1,11 @@
-name: Docker Compose Workflow
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+version: '3.8'
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build and run docker compose
-        run: |
-          cd ./ims-admin
-          docker build -t ims-frontend .
-          docker run -d -p 3000:3000 -e NEXT_PUBLIC_API_URL=http://host.docker.internal:5079 ims-frontend
+services:
+  frontend:
+    build:
+      context: ./ims-admin
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://host.docker.internal:5079

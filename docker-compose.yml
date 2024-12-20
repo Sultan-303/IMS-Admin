@@ -5,6 +5,7 @@ services:
     build:
       context: ./ims-admin
       dockerfile: Dockerfile
+    image: ims-admin:latest
     ports:
       - "3000:3000"
     environment:

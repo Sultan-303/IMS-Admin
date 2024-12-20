@@ -1,12 +1,10 @@
 version: '3.8'
 
 services:
-  frontend:
-    build:
-      context: ./ims-admin
-      dockerfile: Dockerfile
-    image: ims-admin:latest
+  adminfrontend:
+    build: ./ims-admin
+    container_name: ims-admin_c
     ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://host.docker.internal:5079
+      - "3001:3000"
+    stdin_open: true
+    tty: true

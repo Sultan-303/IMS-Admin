@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+        cache-dependency-path: './ims-admin/package-lock.json'
+
+    - name: Install Dependencies
+      run: |
+        cd ims-admin
+        npm ci
+
+    - name: Build Next.js
+      run: |
+        cd ims-admin
+        npm run build
+
+    - name: Run Cypress Tests
+      run: |
+        cd ims-admin
+        npm run dev & npx cypress run
+      env:
+        CI: true

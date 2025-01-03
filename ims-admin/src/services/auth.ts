@@ -29,7 +29,15 @@ export const authService = {
     },
 
     createUser: async (userData: RegisterDTO): Promise<User> => {
-        const response = await api.post<User>('/Auth/register', userData);
-        return response.data;
-    },
+        debugger; // Add breakpoint
+        console.log('Create User Request:', userData);
+        try {
+            const response = await api.post<User>('/Auth/register', userData);
+            console.log('Create User Response:', response.data);
+            return response.data;
+        } catch (error: any) {
+            console.error('Create User Error:', error.response?.data);
+            throw error;
+        }
+    }
 };

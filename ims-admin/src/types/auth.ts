@@ -33,5 +33,7 @@ export interface RegisterDTO {
     username: string;
     email: string;
     password: string;
+    passwordHash: string;  // Added missing property
     role: string;
+    isActive: boolean;     // Added missing property
 }

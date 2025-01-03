@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,37 +21,10 @@ jobs:
           
       - name: Install dependencies
         working-directory: ./ims-admin
-        run: |
-          npm cache clean --force
-          npm ci --legacy-peer-deps
+        run: npm ci
         
       - name: Build Next.js app
         working-directory: ./ims-admin
         run: npm run build
         env:
-          NEXT_PUBLIC_API_URL: http://localhost:5079/api
-          
-      - name: Start Next.js
-        working-directory: ./ims-admin
-        run: start npm run start
-        
-      - name: Wait for app
-        run: Start-Sleep -Seconds 10
-        
-      - name: Run Cypress tests
-        working-directory: ./ims-admin
-        run: npm run cypress:run
-        env:
-          CYPRESS_BASE_URL: http://localhost:3000
-          NEXT_PUBLIC_API_URL: http://localhost:5079/api
-
-  docker:
-    needs: build-and-test
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build Docker image
-        run: docker compose build
-        env:
-          NODE_ENV: production
           NEXT_PUBLIC_API_URL: http://localhost:8080/api

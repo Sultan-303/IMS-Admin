@@ -16,23 +16,31 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: './ims-admin/package-lock.json'
           
       - name: Install dependencies
-        run: cd ims-admin && npm ci
+        working-directory: ./ims-admin
+        run: |
+          npm cache clean --force
+          npm ci --legacy-peer-deps
         
       - name: Build Next.js app
-        run: cd ims-admin && npm run build
+        working-directory: ./ims-admin
+        run: npm run build
         env:
           NEXT_PUBLIC_API_URL: http://localhost:5079/api
           
       - name: Start Next.js
-        run: cd ims-admin && start npm run start
+        working-directory: ./ims-admin
+        run: start npm run start
         
       - name: Wait for app
         run: Start-Sleep -Seconds 10
         
       - name: Run Cypress tests
-        run: cd ims-admin && npm run cypress:run
+        working-directory: ./ims-admin
+        run: npm run cypress:run
         env:
           CYPRESS_BASE_URL: http://localhost:3000
           NEXT_PUBLIC_API_URL: http://localhost:5079/api
@@ -42,11 +50,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Build and push Docker image
-        run: |
-          docker compose build
-          docker tag ims-admin ghcr.io/${{ github.repository_owner }}/ims-admin:latest
-          docker push ghcr.io/${{ github.repository_owner }}/ims-admin:latest
+      - name: Build Docker image
+        run: docker compose build
         env:
           NODE_ENV: production
           NEXT_PUBLIC_API_URL: http://localhost:8080/api

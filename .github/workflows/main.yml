@@ -19,9 +19,14 @@ jobs:
           cache: 'npm'
           cache-dependency-path: './ims-admin/package-lock.json'
           
+      - name: Configure npm
+        run: |
+          npm config set cache .npm --location=project
+          npm config set prefer-offline true
+          
       - name: Install dependencies
         working-directory: ./ims-admin
-        run: npm ci
+        run: npm ci --prefer-offline --no-audit
         
       - name: Build Next.js app
         working-directory: ./ims-admin

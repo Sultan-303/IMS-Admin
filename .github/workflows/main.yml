@@ -7,47 +7,56 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: windows-latest
-    defaults:
-      run:
-        working-directory: .
     steps:
-    - uses: actions/checkout@v3
-    - name: Build Docker images
-      run: docker compose -f ./docker-compose.yml build
-      env:
-        NODE_ENV: production
-        NEXT_PUBLIC_API_URL: http://localhost:8080/api
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: cd ims-admin && npm ci
+        
+      - name: Build Next.js app
+        run: cd ims-admin && npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:5079/api
+          
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: ims-admin/.next
+          
+      - name: Wait for deployment
+        run: sleep 30
+        
+      - name: Run Cypress tests
+        run: cd ims-admin && npm run cypress:run
+        env:
+          CYPRESS_BASE_URL: https://${{ github.repository_owner }}.github.io/IMS-Admin
+          NEXT_PUBLIC_API_URL: http://localhost:5079/api
 
-  test:
-    needs: build
-    runs-on: windows-latest
-    defaults:
-      run:
-        working-directory: .
-    steps:
-    - uses: actions/checkout@v3
-    - name: Start containers
-      run: docker compose -f ./docker-compose.yml up -d
-      env:
-        NODE_ENV: development
-        NEXT_PUBLIC_API_URL: http://localhost:5079/api
-    - name: Run Cypress tests in container
-      run: docker compose -f ./docker-compose.yml exec -T frontend npm run cypress:run
-      env:
-        NODE_ENV: development
-        NEXT_PUBLIC_API_URL: http://localhost:5079/api
-
-  artifacts:
-    needs: test
+  docker:
+    needs: build-and-test
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Upload test artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: cypress-results
-        path: |
-          ims-admin/cypress/videos
-          ims-admin/cypress/screenshots
+      - uses: actions/checkout@v3
+      
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Build and push Docker image
+        run: |
+          docker compose build
+          docker tag ims-admin ghcr.io/${{ github.repository_owner }}/ims-admin:latest
+          docker push ghcr.io/${{ github.repository_owner }}/ims-admin:latest
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_API_URL: http://localhost:8080/api

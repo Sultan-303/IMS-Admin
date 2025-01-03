@@ -35,8 +35,8 @@ export const authService = {
             const response = await api.post<User>('/Auth/register', userData);
             console.log('Create User Response:', response.data);
             return response.data;
-        } catch (error: any) {
-            console.error('Create User Error:', error.response?.data);
+        } catch (error: unknown) {
+            console.error('Create User Error:', error);
             throw error;
         }
     }

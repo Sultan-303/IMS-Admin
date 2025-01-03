@@ -12,7 +12,9 @@ export default function CreateUserModal({ onClose, onSave }: CreateUserModalProp
         username: '',
         email: '',
         password: '',
-        role: 'Worker'
+        passwordHash: '',
+        role: 'Worker',
+        isActive: true  
     });
 
     const handleSubmit = async (e: React.FormEvent) => {

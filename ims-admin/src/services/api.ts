@@ -6,6 +6,8 @@ const baseURL = isDevelopment
     ? 'http://localhost:5079/api'    // Local API with Dev DB
     : 'http://localhost:8080/api';   // Docker API with Prod DB
 
+console.log(`Starting application using API: ${baseURL}`);
+
 const api = axios.create({
     baseURL,
     headers: {

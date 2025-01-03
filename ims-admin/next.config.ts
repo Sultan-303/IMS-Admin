@@ -1,10 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  output: 'export',
   reactStrictMode: true,
-  experimental: {
-    serverMinification: false
+  basePath: '/IMS-Admin',
+  images: {
+    unoptimized: true
   }
 };
 

@@ -8,7 +8,7 @@ describe('Authentication Flow', () => {
         cy.intercept('POST', '/api/Auth/login').as('loginRequest')
         cy.intercept('GET', '/api/Auth/me').as('getMeRequest')
         cy.intercept('GET', '/api/Admin/dashboard').as('getDashboard')
-        cy.visit('/auth/login')  // Remove IMS-Admin prefix
+        cy.visit('/IMS-Admin/auth/login')  // Add basePath
     })
 
     it('should login successfully', () => {

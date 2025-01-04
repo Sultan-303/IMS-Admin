@@ -59,6 +59,8 @@ jobs:
           node-version: "18"
           cache: 'npm'
           cache-dependency-path: './ims-admin/package-lock.json'
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v1
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:

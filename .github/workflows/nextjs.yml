@@ -64,7 +64,7 @@ jobs:
         with:
           working-directory: ./ims-admin
           build: npm run build
-          start: npx serve@latest out -l 3000
+          start: npx serve@latest out -l 3001
 
   docker:
     needs: build

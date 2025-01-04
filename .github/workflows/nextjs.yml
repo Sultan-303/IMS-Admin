@@ -49,30 +49,34 @@ jobs:
           path: ./ims-admin/out
 
   cypress-run:
+    needs: build
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "18"
           cache: 'npm'
           cache-dependency-path: './ims-admin/package-lock.json'
+      
       - name: Install Chrome
         uses: browser-actions/setup-chrome@v1
+      
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
           working-directory: ./ims-admin
           build: npm run build
-          start: npx serve@latest out -l 3001 --public /IMS-Admin
-          wait-on: 'http://localhost:3001/IMS-Admin'
-          config: baseUrl=http://localhost:3001/IMS-Admin
+          start: npx serve@latest out -l 3001
+          wait-on: 'http://localhost:3001'
+          config: baseUrl=http://localhost:3001
           browser: chrome
         env:
           NEXT_PUBLIC_API_URL: http://localhost:5079/api
-          CYPRESS_BASE_URL: http://localhost:3001/IMS-Admin
+          CYPRESS_BASE_URL: http://localhost:3001
 
   docker:
     needs: build

@@ -53,20 +53,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      # Install npm dependencies, cache them correctly
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "18"
           cache: 'npm'
           cache-dependency-path: './ims-admin/package-lock.json'
-      # and run all Cypress tests
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
           working-directory: ./ims-admin
           build: npm run build
-          start: npm start
+          start: npx serve@latest out -l 3000
 
   docker:
     needs: build

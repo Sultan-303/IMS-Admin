@@ -64,9 +64,13 @@ jobs:
         with:
           working-directory: ./ims-admin
           build: npm run build
-          start: npx serve@latest out -l 3001
+          start: npx serve@latest out -l 3001 --public /IMS-Admin
+          wait-on: 'http://localhost:3001/IMS-Admin'
+          config: baseUrl=http://localhost:3001/IMS-Admin
+          browser: chrome
         env:
           NEXT_PUBLIC_API_URL: http://localhost:5079/api
+          CYPRESS_BASE_URL: http://localhost:3001/IMS-Admin
 
   docker:
     needs: build

@@ -70,9 +70,13 @@ jobs:
         with:
           working-directory: ./ims-admin
           build: npm run build
-          start: npx serve@latest out -l 3001
+          start: npx serve@latest out --cors -l 3001
           wait-on: 'http://localhost:3001'
-          config: baseUrl=http://localhost:3001
+          config: |
+            {
+              "baseUrl": "http://localhost:3001",
+              "chromeWebSecurity": false
+            }
           browser: chrome
         env:
           NEXT_PUBLIC_API_URL: http://localhost:5079/api

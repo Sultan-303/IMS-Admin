@@ -39,6 +39,9 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: "http://localhost:5079/api"
 
+      - name: List Standalone Build Directory
+        run: ls -la ./ims-admin/.next/standalone
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
@@ -66,7 +69,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: nextjs-build
-          path: ./ims-admin/.next/standalone
+          path: ./ims-admin
+
+      - name: List Restored Standalone Directory
+        run: ls -la ./ims-admin/.next/standalone
 
       - name: Start Next.js Server on Port 3001
         working-directory: ./ims-admin

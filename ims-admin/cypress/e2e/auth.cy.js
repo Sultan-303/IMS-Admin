@@ -8,7 +8,7 @@ describe('Authentication Flow', () => {
         cy.intercept('POST', '/api/Auth/login').as('loginRequest')
         cy.intercept('GET', '/api/Auth/me').as('getMeRequest')
         cy.intercept('GET', '/api/Admin/dashboard').as('getDashboard')
-        cy.visit('/IMS-Admin/auth/login')  // Add basePath
+        cy.visit('/auth/login')  // baseUrl already includes /IMS-Admin
     })
 
     it('should login successfully', () => {
@@ -18,7 +18,7 @@ describe('Authentication Flow', () => {
         
         cy.wait('@loginRequest').its('response.statusCode').should('eq', 200)
         cy.wait('@getMeRequest')
-        cy.url().should('include', '/dashboard')
+        cy.url().should('include', '/IMS-Admin/dashboard')
     })
 
     it('should show error with invalid credentials', () => {
@@ -28,12 +28,12 @@ describe('Authentication Flow', () => {
         
         cy.wait('@loginRequest').its('response.statusCode').should('eq', 401)
         cy.get('[data-testid=error-message]').should('be.visible')
-        cy.url().should('include', '/auth/login')
+        cy.url().should('include', '/IMS-Admin/auth/login')
     })
 
     it('should redirect to login when accessing protected route', () => {
         cy.visit('/dashboard')
-        cy.url().should('include', '/auth/login')
+        cy.url().should('include', '/IMS-Admin/auth/login')
     })
 
     it('should logout successfully', () => {
@@ -41,9 +41,9 @@ describe('Authentication Flow', () => {
         cy.get('[data-testid=password]').type(validCredentials.password)
         cy.get('[data-testid=login-button]').click()
         cy.wait('@loginRequest')
-        cy.wait('@getMeRequest')  // Wait for layout to load
+        cy.wait('@getMeRequest')
         
         cy.get('[data-testid=logout-button]').should('be.visible').click()
-        cy.url().should('include', '/auth/login')
+        cy.url().should('include', '/IMS-Admin/auth/login')
     })
 })

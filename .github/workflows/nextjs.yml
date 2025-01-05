@@ -72,16 +72,16 @@ jobs:
           working-directory: ./ims-admin
           build: npm run build
           start: npx serve@latest out --cors -l 3001
-          wait-on: 'http://localhost:3001'
+          wait-on: 'http://localhost:3001/IMS-Admin/auth/login'
           config: |
             {
-              "baseUrl": "http://localhost:3001",
+              "baseUrl": "http://localhost:3001/IMS-Admin",
               "chromeWebSecurity": false
             }
           browser: chrome
         env:
-          NEXT_PUBLIC_API_URL: http://localhost:5079/api # Development API for tests
-          CYPRESS_BASE_URL: http://localhost:3001
+          NEXT_PUBLIC_API_URL: http://localhost:5079/api
+          CYPRESS_BASE_URL: http://localhost:3001/IMS-Admin
 
   docker:
     runs-on: ubuntu-latest

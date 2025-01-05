@@ -69,7 +69,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: nextjs-build
-          path: ./ims-admin
+          path: ./ims-admin/.next
 
       - name: List Restored Standalone Directory
         run: ls -la ./ims-admin/.next/standalone
@@ -94,7 +94,7 @@ jobs:
         with:
           working-directory: ./ims-admin
           browser: chrome
-          start: false  # We already started the server
+          start: false  # Server is already started
         env:
           CYPRESS_BASE_URL: http://localhost:3001/IMS-Admin
           NEXT_PUBLIC_API_URL: http://localhost:5079/api

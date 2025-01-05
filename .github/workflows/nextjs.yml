@@ -90,6 +90,11 @@ jobs:
       - name: List Restored Standalone Directory
         run: ls -la .next/standalone || echo "Standalone directory not restored."
 
+      - name: List All Files in .next After Download
+        run: |
+          echo "Listing all contents inside .next after downloading artifact:"
+          ls -laR .next || echo ".next directory not found."
+
       - name: List All Restored .next Directory Contents
         run: ls -la .next || echo "Listing contents of .next directory."
 

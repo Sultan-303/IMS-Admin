@@ -41,7 +41,7 @@ jobs:
         working-directory: ./ims-admin
         run: npm run build
         env:
-          NEXT_PUBLIC_API_URL: http://localhost:5079/api
+          NEXT_PUBLIC_API_URL: http://localhost:5079/api # Development API for tests
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -79,7 +79,7 @@ jobs:
             }
           browser: chrome
         env:
-          NEXT_PUBLIC_API_URL: http://localhost:5079/api
+          NEXT_PUBLIC_API_URL: http://localhost:5079/api # Development API for tests
           CYPRESS_BASE_URL: http://localhost:3001
 
   docker:
@@ -104,4 +104,4 @@ jobs:
             ghcr.io/sultan-303/ims-admin:latest
             ghcr.io/sultan-303/ims-admin:${{ github.sha }}
         env:
-          NEXT_PUBLIC_API_URL: http://localhost:8080/api
+          NEXT_PUBLIC_API_URL: http://localhost:5079/api # testing to see what this does

@@ -1,4 +1,4 @@
-name: Deploy Next.js site to Pages
+name: Deploy, Test, and Dockerize
 
 on:
   push:
@@ -10,12 +10,8 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -24,26 +20,17 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
-          cache: 'npm'
-          cache-dependency-path: './ims-admin/package-lock.json'
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-        with:
-          static_site_generator: next
+          node-version: '18'
 
       - name: Install dependencies
         working-directory: ./ims-admin
         run: npm ci
 
-      - name: Build with Next.js
+      - name: Build Next.js
         working-directory: ./ims-admin
-        run: |
-          npm run build
-          ls -la out
+        run: npm run build
         env:
-          NEXT_PUBLIC_API_URL: http://localhost:5079/api
+          NEXT_PUBLIC_API_URL: "http://localhost:5079/api"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -54,32 +41,26 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Display deployment URL
-        run: |
-          echo "::notice::Deployed to: https://sultan-303.github.io/IMS-Admin"
-          echo "### :rocket: Deployment URL" >> $GITHUB_STEP_SUMMARY
-          echo "Application deployed to: https://sultan-303.github.io/IMS-Admin" >> $GITHUB_STEP_SUMMARY
-
-      - name: Wait for deployment
-        run: sleep 10
-
   cypress-run:
-    runs-on: ubuntu-24.04
+    needs: build-deploy
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
-          cache: 'npm'
-          cache-dependency-path: './ims-admin/package-lock.json'
-      
+          node-version: '18'
+
       - name: Install Chrome
         uses: browser-actions/setup-chrome@v1
-      
-      - name: Cypress run
+
+      - name: Install dependencies for Cypress
+        working-directory: ./ims-admin
+        run: npm ci
+
+      - name: Cypress run (GitHub Pages)
         uses: cypress-io/github-action@v6
         with:
           working-directory: ./ims-admin
@@ -90,10 +71,11 @@ jobs:
             }
           browser: chrome
         env:
-          NEXT_PUBLIC_API_URL: http://localhost:5079/api
-          CYPRESS_BASE_URL: https://sultan-303.github.io/IMS-Admin
+          NEXT_PUBLIC_API_URL: "http://localhost:5079/api"
+          CYPRESS_BASE_URL: "https://sultan-303.github.io/IMS-Admin"
 
   docker:
+    needs: cypress-run
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -114,4 +96,4 @@ jobs:
             ghcr.io/sultan-303/ims-admin:latest
             ghcr.io/sultan-303/ims-admin:${{ github.sha }}
         env:
-          NEXT_PUBLIC_API_URL: http://localhost:5079/api # testing to see what this does
+          NEXT_PUBLIC_API_URL: "http://localhost:5079/api"

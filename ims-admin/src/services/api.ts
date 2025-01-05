@@ -4,7 +4,7 @@ import axios from 'axios';
 const isDevelopment = process.env.NODE_ENV === 'development' || process.env.CI === 'true';
 const baseURL = isDevelopment 
     ? 'http://localhost:5079/api'    // Local API with Dev DB
-    : 'http://localhost:8080/api';   // Docker API with Prod DB
+    : 'http://localhost:5079/api';   // Docker API with Prod DB
 
 console.log(`Starting application using API: ${baseURL}`);
 

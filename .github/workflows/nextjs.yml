@@ -1,17 +1,13 @@
-name: Deploy, Test, and Dockerize
+name: CI Pipeline
 
 on:
   push:
-    branches: ["main"]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+    branches: [ "main" ]
+  pull_request:
 
 jobs:
-  build-deploy:
+  build:
+    name: Build Next.js
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,17 +28,9 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: "http://localhost:5079/api"
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./ims-admin/.next/standalone
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
-  cypress-run:
-    needs: build-deploy
+  test:
+    name: Run Cypress Tests
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -53,32 +41,30 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install Chrome
-        uses: browser-actions/setup-chrome@v1
-
-      - name: Install dependencies for Cypress
+      - name: Install dependencies
         working-directory: ./ims-admin
         run: npm ci
 
-      - name: Cypress run (GitHub Pages)
+      - name: Start Next.js
+        working-directory: ./ims-admin
+        run: npm run start &
+      
+      - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
           working-directory: ./ims-admin
-          config: |
-            {
-              "baseUrl": "https://sultan-303.github.io/IMS-Admin",
-              "chromeWebSecurity": false
-            }
           browser: chrome
         env:
-          NEXT_PUBLIC_API_URL: "http://localhost:5079/api"
-          CYPRESS_BASE_URL: "https://sultan-303.github.io/IMS-Admin"
+          CYPRESS_BASE_URL: http://localhost:3000
+          NEXT_PUBLIC_API_URL: http://localhost:5079/api
 
   docker:
-    needs: cypress-run
+    name: Build & Push Docker Image
+    needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3

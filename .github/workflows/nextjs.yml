@@ -39,14 +39,16 @@ jobs:
 
       - name: Build with Next.js
         working-directory: ./ims-admin
-        run: npm run build
+        run: |
+          npm run build
+          ls -la .next/standalone
         env:
-          NEXT_PUBLIC_API_URL: http://localhost:5079/api # Development API for tests
+          NEXT_PUBLIC_API_URL: http://localhost:5079/api
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./ims-admin/out
+          path: ./ims-admin/.next/standalone
 
   cypress-run:
     needs: build

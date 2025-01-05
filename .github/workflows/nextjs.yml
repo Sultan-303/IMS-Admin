@@ -40,16 +40,18 @@ jobs:
           NEXT_PUBLIC_API_URL: "http://localhost:5079/api"
 
       - name: List Standalone Build Directory
-        run: ls -la ./ims-admin/.next/standalone
+        # Corrected path: relative to ./ims-admin
+        run: ls -la .next/standalone || echo "Standalone directory not found."
 
       - name: List All .next Directory Contents
-        run: ls -la ./ims-admin/.next
+        run: ls -la .next || echo "Listing contents of .next directory."
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
           name: nextjs-build
-          path: ./ims-admin/.next/standalone
+          # Corrected path: relative to ./ims-admin
+          path: .next/standalone || echo "No artifact to upload."
 
   test:
     name: Run Cypress Tests

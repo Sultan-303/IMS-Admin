@@ -74,13 +74,19 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: nextjs-build
-          path: ./ims-admin/.next
+          # Download to a temporary directory
+          path: ./ims-admin/.next_temp
+
+      - name: Move Standalone to .next
+        run: |
+          echo "Moving standalone directory to .next"
+          mv ./ims-admin/.next_temp/* ./ims-admin/.next/standalone/
 
       - name: List Restored Standalone Directory
-        run: ls -la ./ims-admin/.next/standalone
+        run: ls -la .next/standalone || echo "Standalone directory not restored."
 
       - name: List All Restored .next Directory Contents
-        run: ls -la ./ims-admin/.next
+        run: ls -la .next || echo "Listing contents of .next directory."
 
       - name: Start Next.js Server on Port 3001
         working-directory: ./ims-admin

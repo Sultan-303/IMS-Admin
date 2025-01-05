@@ -50,6 +50,13 @@ jobs:
         with:
           path: ./ims-admin/.next/standalone
 
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Wait for deployment
+        run: sleep 10
+
   cypress-run:
     runs-on: ubuntu-24.04
     steps:

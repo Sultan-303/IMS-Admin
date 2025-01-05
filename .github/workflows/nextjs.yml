@@ -41,18 +41,24 @@ jobs:
         working-directory: ./ims-admin
         run: |
           npm run build
-          ls -la .next/standalone
+          ls -la out
         env:
           NEXT_PUBLIC_API_URL: http://localhost:5079/api
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./ims-admin/.next/standalone
+          path: ./ims-admin/out
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Display deployment URL
+        run: |
+          echo "::notice::Deployed to: https://sultan-303.github.io/IMS-Admin"
+          echo "### :rocket: Deployment URL" >> $GITHUB_STEP_SUMMARY
+          echo "Application deployed to: https://sultan-303.github.io/IMS-Admin" >> $GITHUB_STEP_SUMMARY
 
       - name: Wait for deployment
         run: sleep 10
@@ -77,18 +83,15 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           working-directory: ./ims-admin
-          build: npm run build
-          start: npx serve@latest out --cors -l 3001
-          wait-on: 'http://localhost:3001/IMS-Admin/auth/login'
           config: |
             {
-              "baseUrl": "http://localhost:3001/IMS-Admin",
+              "baseUrl": "https://sultan-303.github.io/IMS-Admin",
               "chromeWebSecurity": false
             }
           browser: chrome
         env:
           NEXT_PUBLIC_API_URL: http://localhost:5079/api
-          CYPRESS_BASE_URL: http://localhost:3001/IMS-Admin
+          CYPRESS_BASE_URL: https://sultan-303.github.io/IMS-Admin
 
   docker:
     runs-on: ubuntu-latest

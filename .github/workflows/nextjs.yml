@@ -51,7 +51,6 @@ jobs:
           path: ./ims-admin/.next/standalone
 
   cypress-run:
-    needs: build
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -85,7 +84,6 @@ jobs:
           CYPRESS_BASE_URL: http://localhost:3001
 
   docker:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

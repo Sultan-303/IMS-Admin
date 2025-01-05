@@ -16,88 +16,97 @@ jobs:
     name: Build Next.js
     runs-on: ubuntu-latest
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Step 2: Setup Node.js environment
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
+      # Step 3: Install dependencies
       - name: Install dependencies
         working-directory: ./ims-admin
         run: npm ci
 
+      # Step 4: Debug environment variables (optional)
       - name: Debug Environment Variables
         run: echo "NEXT_PUBLIC_API_URL=${{ env.NEXT_PUBLIC_API_URL }}"
         env:
           NEXT_PUBLIC_API_URL: "http://localhost:5079/api"
 
+      # Step 5: Build Next.js project
       - name: Build Next.js
         working-directory: ./ims-admin
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: "http://localhost:5079/api"
 
-      - name: List Standalone Build Directory
-        # Corrected path: relative to ./ims-admin
+      # Step 6: List contents of the standalone directory for verification
+      - name: List .next/standalone Directory
         run: ls -la .next/standalone || echo "Standalone directory not found."
 
-      - name: List All .next Directory Contents
-        run: ls -la .next || echo "Listing contents of .next directory."
-
-      - name: List .next Directory Recursively
+      # Step 7: List all contents inside .next directory recursively for deeper verification
+      - name: List All .next Directory Contents Recursively
         run: |
           echo "Listing all contents inside .next directory recursively:"
           ls -laR .next || echo ".next directory not found."
 
+      # Step 8: Upload the standalone build as an artifact
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
           name: nextjs-build
-          # Corrected path: relative to ./ims-admin
-          path: .next/standalone || echo "No artifact to upload."
+          path: .next/standalone
+          # Optional: Set retention days (default is 90)
+          retention-days: 10  # Change as needed
 
   test:
     name: Run Cypress Tests
     needs: build
     runs-on: ubuntu-latest
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Step 2: Setup Node.js environment
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
+      # Step 3: Install dependencies
       - name: Install dependencies
         working-directory: ./ims-admin
         run: npm ci
 
+      # Step 4: Restore the build artifact
       - name: Restore Build Artifact
         uses: actions/download-artifact@v3
         with:
           name: nextjs-build
-          # Download to a temporary directory
           path: ./ims-admin/.next_temp
 
+      # Step 5: Move the restored standalone directory to .next/standalone
       - name: Move Standalone to .next
         run: |
           echo "Moving standalone directory to .next"
           mv ./ims-admin/.next_temp/* ./ims-admin/.next/standalone/
 
+      # Step 6: Verify the standalone directory after moving
       - name: List Restored Standalone Directory
-        run: ls -la .next/standalone || echo "Standalone directory not restored."
+        run: ls -la ./ims-admin/.next/standalone || echo "Standalone directory not restored."
 
+      # Step 7: List all contents in .next after restoring artifact
       - name: List All Files in .next After Download
         run: |
           echo "Listing all contents inside .next after downloading artifact:"
-          ls -laR .next || echo ".next directory not found."
+          ls -laR ./ims-admin/.next || echo ".next directory not found."
 
-      - name: List All Restored .next Directory Contents
-        run: ls -la .next || echo "Listing contents of .next directory."
-
+      # Step 8: Start the Next.js server in the background
       - name: Start Next.js Server on Port 3001
         working-directory: ./ims-admin
         run: |
@@ -113,6 +122,7 @@ jobs:
             sleep 2
           done
 
+      # Step 9: Run Cypress Tests without starting the server again
       - name: Run Cypress Tests
         uses: cypress-io/github-action@v6
         with:
@@ -123,6 +133,7 @@ jobs:
           CYPRESS_BASE_URL: http://localhost:3001/IMS-Admin
           NEXT_PUBLIC_API_URL: http://localhost:5079/api
 
+      # Step 10: Stop the Next.js server
       - name: Stop Next.js Server
         working-directory: ./ims-admin
         run: kill $(cat server.pid) || true
@@ -132,24 +143,29 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Step 2: Setup Node.js environment
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
+      # Step 3: Install dependencies
       - name: Install dependencies
         working-directory: ./ims-admin
         run: npm ci
 
+      # Step 4: Build Next.js project
       - name: Build Next.js
         working-directory: ./ims-admin
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: "http://localhost:5079/api"
 
+      # Step 5: Login to GitHub Container Registry
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -157,6 +173,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Step 6: Build and push Docker image
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:

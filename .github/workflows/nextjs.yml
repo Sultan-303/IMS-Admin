@@ -2,12 +2,104 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
 
 jobs:
   build:
     name: Build Next.js
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        working-directory: ./ims-admin
+        run: npm ci
+
+      - name: Debug Environment Variables
+        run: echo "NEXT_PUBLIC_API_URL=${{ env.NEXT_PUBLIC_API_URL }}"
+        env:
+          NEXT_PUBLIC_API_URL: "http://localhost:5079/api"
+
+      - name: Build Next.js
+        working-directory: ./ims-admin
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: "http://localhost:5079/api"
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: nextjs-build
+          path: ./ims-admin/.next/standalone
+
+  test:
+    name: Run Cypress Tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        working-directory: ./ims-admin
+        run: npm ci
+
+      - name: Restore Build Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: nextjs-build
+          path: ./ims-admin/.next/standalone
+
+      - name: Start Next.js Server on Port 3001
+        working-directory: ./ims-admin
+        run: |
+          PORT=3001 node .next/standalone/server.js &
+          echo $! > server.pid
+          # Wait for the server to be up
+          for i in {1..30}; do
+            if curl -s http://localhost:3001/IMS-Admin/auth/login >/dev/null; then
+              echo "Server is up!"
+              break
+            fi
+            echo "Waiting for server to start..."
+            sleep 2
+          done
+
+      - name: Run Cypress Tests
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: ./ims-admin
+          browser: chrome
+          start: false  # We already started the server
+        env:
+          CYPRESS_BASE_URL: http://localhost:3001/IMS-Admin
+          NEXT_PUBLIC_API_URL: http://localhost:5079/api
+
+      - name: Stop Next.js Server
+        working-directory: ./ims-admin
+        run: kill $(cat server.pid) || true
+
+  docker:
+    name: Build & Push Docker Image
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,44 +119,6 @@ jobs:
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: "http://localhost:5079/api"
-
-  test:
-    name: Run Cypress Tests
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Install dependencies
-        working-directory: ./ims-admin
-        run: npm ci
-
-      - name: Start Next.js
-        working-directory: ./ims-admin
-        run: npm run start &
-      
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
-        with:
-          working-directory: ./ims-admin
-          browser: chrome
-        env:
-          CYPRESS_BASE_URL: http://localhost:3000
-          NEXT_PUBLIC_API_URL: http://localhost:5079/api
-
-  docker:
-    name: Build & Push Docker Image
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3

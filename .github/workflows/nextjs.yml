@@ -50,7 +50,6 @@ jobs:
 
   test:
     name: Run Cypress Tests
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -105,7 +104,6 @@ jobs:
 
   docker:
     name: Build & Push Docker Image
-    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

@@ -29,7 +29,6 @@ export const authService = {
     },
 
     createUser: async (userData: RegisterDTO): Promise<User> => {
-        debugger; // Add breakpoint
         console.log('Create User Request:', userData);
         try {
             const response = await api.post<User>('/Auth/register', userData);
